@@ -1,0 +1,19 @@
+name: Conventional Commits
+description: >
+  Fails a pull request whose commits are no Conventional Commits (scripts/check-commits.sh).
+  Needs a checkout with fetch-depth 0.
+inputs:
+  check-title:
+    description: Check the pull request title too (for repositories that squash-merge)
+    required: false
+    default: 'false'
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        BASE: ${{ github.event.pull_request.base.sha }}
+        HEAD: ${{ github.event.pull_request.head.sha }}
+        TITLE: ${{ inputs.check-title == 'true' && github.event.pull_request.title || '' }}
+        SCRIPTS: ${{ github.action_path }}/../scripts
+      run: '"$SCRIPTS/check-commits.sh" "$BASE" "$HEAD" "$TITLE"'
