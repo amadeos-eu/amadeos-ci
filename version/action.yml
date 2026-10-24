@@ -1,0 +1,51 @@
+name: amadeOS version
+description: >
+  Computes the version of this build from the branch and the Conventional Commits since the last
+  release tag (scripts/next-version.sh), and fills in the <releases> of AppStream metainfo files.
+  Needs a checkout with fetch-depth 0.
+inputs:
+  metainfo:
+    description: Metainfo files (space-separated) whose <releases> are written for the package
+    required: false
+    default: ''
+outputs:
+  version:
+    description: The SemVer version, for example 1.1.0-dev.57, 1.1.0-pre.61 or 1.1.0
+    value: ${{ steps.version.outputs.version }}
+  deb-version:
+    description: The same for Debian, with ~ instead of - (1.1.0~dev.57)
+    value: ${{ steps.version.outputs.deb-version }}
+  channel:
+    description: dev (develop, pull requests), pre (release) or release (main)
+    value: ${{ steps.version.outputs.channel }}
+runs:
+  using: composite
+  steps:
+    - id: version
+      shell: bash
+      env:
+        METAINFO: ${{ inputs.metainfo }}
+        SCRIPTS: ${{ github.action_path }}/../scripts
+      run: |
+        if [ "$(git rev-parse --is-shallow-repository)" = true ]; then
+          echo "::error::The version needs the whole history: actions/checkout with fetch-depth: 0"
+          exit 1
+        fi
+        case "$GITHUB_EVENT_NAME:$GITHUB_REF_NAME" in
+          push:release|workflow_dispatch:release) channel=pre ;;
+          # main is the release branch once the repository has a develop branch; before that it is
+          # where pull requests land (scripts/setup-release-branches.sh).
+          push:main|workflow_dispatch:main)
+            if git ls-remote --exit-code --heads origin develop >/dev/null; then channel=release; else channel=dev; fi ;;
+          *) channel=dev ;;
+        esac
+        version=$("$SCRIPTS/next-version.sh" "$channel")
+        for file in $METAINFO; do
+          "$SCRIPTS/metainfo-releases.sh" "$file" "$version"
+        done
+        echo "Version $version ($channel)"
+        {
+          echo "version=$version"
+          echo "deb-version=${version//-/\~}"
+          echo "channel=$channel"
+        } >> "$GITHUB_OUTPUT"

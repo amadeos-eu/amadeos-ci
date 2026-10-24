@@ -1,0 +1,38 @@
+name: amadeOS release
+description: >
+  Tags the built commit vX.Y.Z and publishes a GitHub Release with release notes from the Conventional
+  Commits (scripts/release-notes.sh) and the given files. Does nothing when the tag exists already.
+  The job needs permissions contents: write.
+inputs:
+  version:
+    description: The released version (outputs.version of the version action, channel release)
+    required: true
+  files:
+    description: Files to attach, as shell globs (space-separated), for example build/distributions/*.deb
+    required: false
+    default: ''
+  token:
+    description: Token that may create releases
+    required: false
+    default: ${{ github.token }}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      env:
+        VERSION: ${{ inputs.version }}
+        FILES: ${{ inputs.files }}
+        GH_TOKEN: ${{ inputs.token }}
+        SCRIPTS: ${{ github.action_path }}/../scripts
+      run: |
+        tag="v$VERSION"
+        if git ls-remote --exit-code --tags origin "refs/tags/$tag" >/dev/null; then
+          echo "$tag exists already; nothing to release"
+          exit 0
+        fi
+        previous=$(git tag --list 'v*' | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1 || true)
+        "$SCRIPTS/release-notes.sh" "$previous" HEAD > "$RUNNER_TEMP/release-notes.md"
+        cat "$RUNNER_TEMP/release-notes.md"
+        # shellcheck disable=SC2086 # the globs are meant to expand
+        gh release create "$tag" --target "$GITHUB_SHA" --title "${GITHUB_REPOSITORY#*/} $VERSION" \
+          --notes-file "$RUNNER_TEMP/release-notes.md" $FILES
