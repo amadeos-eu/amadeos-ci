@@ -44,6 +44,8 @@ All need a checkout with `fetch-depth: 0`. A change here reaches every repositor
 repository: a fine-grained token of datazuul for the amadeOS repositories with *Contents* and *Workflows*
 read and write. The built-in token may neither push to other repositories nor push commits that change
 workflow files, and its pushes would start no workflows.
+The steps to create the token and the secret are in chapter 51 of the handbook,
+["The token for Promote"](https://datazuul.github.io/amade-commons/51-releases/#the-token-for-promote).
 
 This repository itself has only `main`; it is not promoted.
 
