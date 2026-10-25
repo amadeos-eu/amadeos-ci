@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # One-time setup of the release branches in the amadeOS repositories, with the GitHub CLI (gh auth login):
-# creates develop and release at the current main, makes develop the default branch, and protects main
-# and release with a ruleset that allows fast-forwards only (no force push, no deletion).
+# lets pull requests be merged with a merge commit only (no squash, no rebase), creates develop and
+# release at the current main, makes develop the default branch, and protects main and release with a
+# ruleset that allows fast-forwards only (no force push, no deletion).
 #
 # Usage: scripts/setup-release-branches.sh [repository ...]
 #
-#   Without repositories: all of amadeos/repositories.list, then amadeos. Repositories that have develop already
-#   are skipped, so the script can run again. Merge open pull requests first, or change their base to
+#   Without repositories: all of amadeos/repositories.list, then amadeos. The merge settings are applied
+#   every time; the branches of repositories that have develop already are left alone, so the script can
+#   run again. Merge open pull requests first, or change their base to
 #   develop afterwards.
 set -euo pipefail
 
@@ -20,8 +22,12 @@ fi
 
 for repo in "${repos[@]}"; do
     echo "== $repo"
+    # Merge commits keep the commits of a pull request, which the version count and the handbook pins need.
+    gh api -X PATCH "repos/datazuul/$repo" -F allow_merge_commit=true -F allow_squash_merge=false \
+        -F allow_rebase_merge=false >/dev/null
+    echo "  pull requests: merge commits only"
     if gh api "repos/datazuul/$repo/branches/develop" >/dev/null 2>&1; then
-        echo "  has develop already; skipped"
+        echo "  has develop already; branches left as they are"
         continue
     fi
     sha=$(gh api "repos/datazuul/$repo/git/ref/heads/main" --jq .object.sha)
