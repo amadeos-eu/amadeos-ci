@@ -32,7 +32,7 @@ All need a checkout with `fetch-depth: 0`. A change here reaches every repositor
 | `scripts/metainfo-releases.sh <file> <version>` | writes the `<releases>` of a metainfo file |
 | `scripts/check-commits.sh <base> <head> [title]` | the Conventional Commits check |
 | `scripts/promote.sh release\|main [repository ...]` | moves release up to develop or main up to release, by fast-forward |
-| `scripts/setup-release-branches.sh [repository ...]` | one-time setup of develop, release and the ruleset, with `gh` |
+| `scripts/setup-release-branches.sh [repository ...]` | one-time setup with `gh`: merge commits only, develop, release and the ruleset |
 | `scripts/test-ci.sh` | tests all of them on throwaway repositories |
 
 `buildDistribution.sh` of amadeos uses `next-version.sh` from a checkout of this repository next to it.
