@@ -3,8 +3,8 @@ name: Promote
 # Moves release up to develop (a pre build for testing) or main up to release (the release), in all
 # repositories of amadeos/repositories.list or in the ones given (scripts/promote.sh). The pushes start the
 # Build workflow on the moved branch; on main it tags vX.Y.Z and publishes the GitHub Release.
-# Needs the secret PROMOTE_TOKEN: a fine-grained token of datazuul for the amadeOS repositories with
-# Contents and Workflows read and write, stored in this repository (the built-in token may neither push to other repositories nor
+# Needs the secret PROMOTE_TOKEN: a fine-grained token with resource owner amadeos-eu for all its repositories with
+# Contents and Workflows read and write, stored as an organization secret shared with this repository (the built-in token may neither push to other repositories nor
 # push commits that change workflow files, and its pushes would start no workflows).
 
 on:
