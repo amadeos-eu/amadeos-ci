@@ -8,7 +8,7 @@
 #   Without repositories: all of amadeos/repositories.list in its order (libraries first), then amadeos.
 #   GITHUB_TOKEN or PROMOTE_TOKEN: a token that may push to the repositories, workflow files included
 #   (a fine-grained token with Contents and Workflows read and write). Without one, git uses your own
-#   credentials. PROMOTE_REMOTE replaces https://github.com/datazuul (for tests).
+#   credentials. PROMOTE_REMOTE replaces https://github.com/amadeos-eu (for tests).
 #
 # Before main is moved, the pins of amade-commons and amade-game-engine in build.gradle must be
 # released versions (a tag vX.Y.Z, or a commit that a release tag contains), and the libraries are
@@ -31,9 +31,9 @@ trap 'rm -rf "$work"' EXIT
 
 url() {
     if [ -n "$token" ]; then
-        echo "https://x-access-token:$token@github.com/datazuul/$1.git"
+        echo "https://x-access-token:$token@github.com/amadeos-eu/$1.git"
     else
-        echo "${PROMOTE_REMOTE:-https://github.com/datazuul}/$1.git"
+        echo "${PROMOTE_REMOTE:-https://github.com/amadeos-eu}/$1.git"
     fi
 }
 
@@ -67,10 +67,10 @@ check_pins() {
             continue
         else
             echo "  $repo pins $lib at $ref, which is in no release of $lib yet." >&2
-            echo "  Release $lib first and pin its tag (com.github.datazuul:$lib:vX.Y.Z)." >&2
+            echo "  Release $lib first and pin its tag (com.github.amadeos-eu:$lib:vX.Y.Z)." >&2
         fi
         ok=0
-    done < <(git -C "$work/$repo" grep -hoE "com\.github\.datazuul:amade-(commons|game-engine):[A-Za-z0-9._-]+" \
+    done < <(git -C "$work/$repo" grep -hoE "com\.github\.(datazuul|amadeos-eu):amade-(commons|game-engine):[A-Za-z0-9._-]+" \
                  "origin/$branch" -- '*.gradle' | sort -u)
     [ "$ok" = 1 ]
 }

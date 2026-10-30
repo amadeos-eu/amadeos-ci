@@ -105,7 +105,7 @@ git -C remote/amade-commons.git tag v1.0.0 main
 git clone --quiet remote/amade-test.git app
 cd app
 git switch --quiet develop
-echo "implementation 'com.github.datazuul:amade-commons:abc1234567'" > build.gradle
+echo "implementation 'com.github.amadeos-eu:amade-commons:abc1234567'" > build.gradle
 git add build.gradle && commit "feat(test): uses commons"
 git push --quiet origin develop
 promote() { PROMOTE_TOKEN='' GITHUB_TOKEN='' PROMOTE_REMOTE="$work/remote" "$scripts/promote.sh" "$@" >"$work/promote.log" 2>&1; }
