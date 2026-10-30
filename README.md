@@ -4,7 +4,7 @@ Versions and releases for all amadeOS repositories: Semantic Versioning from 1.0
 [Conventional Commits](https://www.conventionalcommits.org/), with the branches `develop` (builds
 `X.Y.Z-dev.N`), `release` (`X.Y.Z-pre.N`) and `main` (releases: tag `vX.Y.Z` and a GitHub Release).
 The whole workflow is explained in chapter 51, "Versions and Releases", of the
-[Application Developer's Handbook](https://datazuul.github.io/amade-commons/51-releases/); the rules are
+[Application Developer's Handbook](https://docs.amadeos.eu/amade-commons/51-releases/); the rules are
 in `AGENTS.md` and `CONTRIBUTING.md` of [amadeos](https://github.com/amadeos-eu/amadeos).
 
 This is its own repository because GitHub downloads a whole repository to run one of its actions, and
@@ -45,7 +45,7 @@ secret of amadeos-eu shared with this repository: a fine-grained token with reso
 its repositories with *Contents* and *Workflows* read and write. The built-in token may neither push to other repositories nor push commits that change
 workflow files, and its pushes would start no workflows.
 The steps to create the token and the secret are in chapter 51 of the handbook,
-["The token for Promote"](https://datazuul.github.io/amade-commons/51-releases/#the-token-for-promote).
+["The token for Promote"](https://docs.amadeos.eu/amade-commons/51-releases/#the-token-for-promote).
 
 This repository itself has only `main`; it is not promoted.
 
