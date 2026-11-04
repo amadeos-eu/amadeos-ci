@@ -33,6 +33,7 @@ All need a checkout with `fetch-depth: 0`. A change here reaches every repositor
 | `scripts/check-commits.sh <base> <head> [title]` | the Conventional Commits check |
 | `scripts/promote.sh release\|main [repository ...]` | moves release up to develop or main up to release, by fast-forward |
 | `scripts/setup-release-branches.sh [repository ...]` | one-time setup with `gh`: merge commits only, develop, release and the ruleset |
+| `scripts/check-release-setup.sh [--fix] [repository ...]` | checks with `gh` what the setup makes (default branch develop, develop and release, merge commits only, the ruleset) for every repository; `--fix` repairs the settings and the ruleset |
 | `scripts/test-ci.sh` | tests all of them on throwaway repositories |
 
 `buildDistribution.sh` of amadeos uses `next-version.sh` from a checkout of this repository next to it.

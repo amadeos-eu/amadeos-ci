@@ -143,6 +143,35 @@ promote release && promoted=yes || promoted=no
 expect "promote all of repositories.list" "yes" "$promoted"
 expect "repositories.list is read" "2" "$(grep -cE '^== (amade-test|amadeos)$' "$work/promote.log")"
 
+# check-release-setup.sh against a fake gh: "good" is set up, "bad" has main as default branch, squash
+# merges, no ruleset and no release branch.
+mkdir -p "$work/fakegh"
+cat > "$work/fakegh/gh" <<'GH'
+#!/usr/bin/env bash
+echo "$*" >> "$(dirname "$0")/calls.log"
+case "$*" in
+    *"-X PATCH"*) ;;
+    *"rulesets --input"*) cat >/dev/null ;;
+    "api repos/amadeos-eu/good --jq"*) echo "develop true false false" ;;
+    "api repos/amadeos-eu/bad --jq"*) echo "main true true false" ;;
+    *good/branches/*|*bad/branches/develop) ;;
+    *good/rulesets*) echo active ;;
+    *bad/rulesets*) echo "" ;;
+    *) exit 1 ;;
+esac
+GH
+chmod +x "$work/fakegh/gh"
+check_out=$(PATH="$work/fakegh:$PATH" "$scripts/check-release-setup.sh" good bad 2>/dev/null) && checked=0 || checked=$?
+expect "check: a set-up repository is ok" "good  ok" "$(grep '^good' <<<"$check_out")"
+expect "check: what is missing is named" \
+    'bad   no release branch; default branch is main; merge=true squash=true rebase=false; no ruleset "Release branches"' \
+    "$(grep '^bad' <<<"$check_out")"
+expect "check: exit status 1 when something is missing" "1" "$checked"
+check_out=$(PATH="$work/fakegh:$PATH" "$scripts/check-release-setup.sh" --fix bad 2>/dev/null) || true
+expect "check --fix repairs the settings, not the branches" \
+    "bad  no release branch (fixed: default branch develop, merge commits only, ruleset)" "$check_out"
+expect "check --fix creates the ruleset" "1" "$(grep -c 'rulesets --input' "$work/fakegh/calls.log")"
+
 if [ "$failures" -gt 0 ]; then
     echo "$failures failure(s)"
     exit 1
