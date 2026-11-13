@@ -34,6 +34,7 @@ All need a checkout with `fetch-depth: 0`. A change here reaches every repositor
 | `scripts/promote.sh release\|main [repository ...]` | moves release up to develop or main up to release, by fast-forward |
 | `scripts/setup-release-branches.sh [repository ...]` | one-time setup with `gh`: merge commits only, develop, release and the ruleset |
 | `scripts/check-release-setup.sh [--fix] [repository ...]` | checks with `gh` what the setup makes (default branch develop, develop and release, merge commits only, the ruleset) for every repository; `--fix` repairs the settings and the ruleset |
+| `scripts/check-builds.sh [develop\|release\|main] [repository ...]` | shows with `gh` the Build result of the branch head (default release) in every repository, after a Promote: success, running, failure with the run link, or no build yet; on main also the newest tag; exit 0 all green, 1 failed, 2 still running |
 | `scripts/test-ci.sh` | tests all of them on throwaway repositories |
 
 `buildDistribution.sh` of amadeos uses `next-version.sh` from a checkout of this repository next to it.
